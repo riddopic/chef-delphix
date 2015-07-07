@@ -1,0 +1,38 @@
+# encoding: UTF-8
+#<% require 'kitchen-sync' %>
+---
+driver:
+  name: docker
+  socket: <%= ENV['DOCKER_HOST'] %>
+
+provisioner:
+  name: chef_zero
+  attributes:
+    delphix:
+      server:
+      username:
+      password:
+      api_version: { type: 'APIVersion', major: 1, minor: 0, micro: 0 }
+
+platforms:
+  - name: ubuntu-14.04
+    dockerfile: ./Docker/ubuntu-14.04/Dockerfile
+    run_list:
+    - recipe[apt]
+
+  - name: centos-6
+    dockerfile: ./Docker/centos-6/Dockerfile
+    run_list:
+    - recipe[yum]
+
+  - name: centos-7
+    dockerfile: ./Docker/centos-7/Dockerfile
+    run_list:
+    - recipe[yum]
+
+suites:
+  - name: default
+    run_list:
+    - recipe[delphix::default]
+    - recipe[delphix::example]
+    attributes:

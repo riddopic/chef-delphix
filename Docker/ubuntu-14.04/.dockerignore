@@ -1,0 +1,12 @@
+
+.DS_Store
+.envrc
+.git
+.gitignore
+.kitchen
+.vagrant
+Dockerfile
+Makefile
+LICENSE
+README.*
+docker-compose.yml

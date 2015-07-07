@@ -1,0 +1,44 @@
+DEPENDENCIES
+  baseos
+    git: git://github.com/riddopic/baseos.git
+    revision: 69015c5caafb66cd19a536e062600bce1b797282
+    branch: master
+  delphix
+    path: .
+    metadata: true
+  garcon
+    git: git://github.com/riddopic/garcon.git
+    revision: c43d9540ef19d354586c7660e31d118f20ee6aad
+    branch: develop
+
+GRAPH
+  apt (2.7.0)
+  baseos (0.1.2)
+    apt (>= 0.0.0)
+    motd-tail (>= 0.0.0)
+    yum (>= 0.0.0)
+    yum-amazon (>= 0.0.0)
+    yum-centos (>= 0.0.0)
+    yum-epel (>= 0.0.0)
+    yum-fedora (>= 0.0.0)
+  build-essential (2.2.3)
+  chef_handler (1.2.0)
+  delphix (0.2.0)
+    apt (>= 0.0.0)
+    build-essential (>= 0.0.0)
+    garcon (>= 0.0.0)
+    yum (>= 0.0.0)
+  garcon (1.1.3)
+    baseos (>= 0.0.0)
+    chef_handler (>= 0.0.0)
+    motd-tail (>= 0.0.0)
+  motd-tail (2.0.2)
+  yum (3.6.1)
+  yum-amazon (0.2.0)
+    yum (~> 3.0)
+  yum-centos (0.4.5)
+    yum (~> 3.0)
+  yum-epel (0.6.2)
+    yum (~> 3.2)
+  yum-fedora (0.3.0)
+    yum (~> 3.0)

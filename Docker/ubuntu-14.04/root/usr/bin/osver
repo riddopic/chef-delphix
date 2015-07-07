@@ -1,0 +1,76 @@
+#!/bin/sh
+# encoding: UTF-8
+#
+# Author:    Stefano Harding <riddopic@gmail.com>
+# License:   Apache License, Version 2.0
+# Copyright: (C) 2014-2015 Stefano Harding
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+if test -f "/etc/lsb-release" && grep -q DISTRIB_ID /etc/lsb-release; then
+  os=`grep DISTRIB_ID /etc/lsb-release | cut -d "=" -f 2 | tr '[A-Z]' '[a-z]'`
+  ver=`grep DISTRIB_RELEASE /etc/lsb-release | cut -d "=" -f 2`
+
+elif test -f "/etc/debian_version"; then
+  os="debian"
+  ver=`cat /etc/debian_version`
+
+elif test -f "/etc/alpine-release"; then
+  os="alpine"
+  ver=`cat /etc/alpine-release`
+
+elif test -f "/etc/redhat-release"; then
+  os=`sed 's/^\(.\+\) release.*/\1/' /etc/redhat-release | tr '[A-Z]' '[a-z]'`
+  ver=`sed 's/^.\+ release \([.0-9]\+\).*/\1/' /etc/redhat-release`
+
+elif test -f "/etc/system-release"; then
+  os=`sed 's/^\(.\+\) release.\+/\1/' /etc/system-release | tr '[A-Z]' '[a-z]'`
+  ver=`sed 's/^.\+ release \([.0-9]\+\).*/\1/' /etc/system-release | tr '[A-Z]' '[a-z]'`
+  if test "$os" = "amazon linux ami"; then
+    os="el"
+    ver="6.0"
+  fi
+
+elif test -f "/usr/bin/sw_vers"; then
+  os="mac_os_x"
+  ver=`sw_vers | awk '/^ProductVersion:/ { print $2 }' | cut -d. -f1,2`
+
+elif test -f "/etc/release"; then
+  if grep -q SmartOS /etc/release; then
+    os="smartos"
+    ver=`grep ^Image /etc/product | awk '{ print $3 }'`
+  else
+    os="solaris2"
+    ver=`/usr/bin/uname -r`
+  fi
+
+elif test -f "/etc/SuSE-release"; then
+  if grep -q 'Enterprise' /etc/SuSE-release; then
+    os="sles"
+    ver=`awk '/^VERSION/ {V = $3}; /^PATCHLEVEL/ {P = $3}; END {print V "." P}' /etc/SuSE-release`
+  else
+    os="suse"
+    ver=`awk '/^VERSION =/ { print $3 }' /etc/SuSE-release`
+  fi
+
+elif test "x$os" = "xFreeBSD"; then
+  os="freebsd"
+  ver=`uname -r | sed 's/-.*//'`
+
+elif test "x$os" = "xAIX"; then
+  os="aix"
+  ver="`uname -v`.`uname -r`"
+fi
+
+echo $os $ver

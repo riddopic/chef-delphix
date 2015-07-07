@@ -1,0 +1,9 @@
+{
+    "id":"foo",
+    "pw":{
+      "encrypted_data":"DBmrU40EVl9Z15rGIGwSnJ4IxCFieu+B0l7D3HAsdqU=\n",
+      "iv":"o3ipr3zynuSunRNBdG8RDA==\n",
+      "version":1,
+      "cipher":"aes-256-cbc"
+    }
+}
