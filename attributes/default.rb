@@ -33,5 +33,5 @@ default[:delphix].tap do |delphix|
 
   # The version of the Delphix Gem to use, a setting of nil will use the latest
   # version (not recomended).
-  delphix[:gem][:version] = '0.3.4'
+  delphix[:gem][:version] = '0.4.0'
 end
