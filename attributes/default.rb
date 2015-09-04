@@ -29,9 +29,9 @@ default[:delphix].tap do |delphix|
   delphix[:password] = nil
   #
   # The API version running on the Delphix appliance.
-  delphix[:api_version] = '1.0.0'
+  delphix[:api_version] = { type: 'APIVersion', major: 1, minor: 0, micro: 0 }
 
   # The version of the Delphix Gem to use, a setting of nil will use the latest
   # version (not recomended).
-  delphix[:gem][:version] = '0.4.0'
+  delphix[:gem][:version] = '0.4.1'
 end

@@ -46,12 +46,19 @@ module Delphix
       list.reject { |i| i[key.to_sym] != item }.map { |i| i[:reference] }
     end
 
-    # In-process cache LLT and LRU expiration semantics.
+    # Delete the VDB from the system.
     #
-    # @return [StashCache]
+    # @param [String] name
+    #   The name of the database to delete.
     #
-    def cache
-      @cache ||= Garcon::StashCache.new(ttl_seconds: 15, tti_seconds: 30)
+    # @return [undefined]
+    #
+    def delete_vdb(name)
+      Delphix.delete Delphix.database_url + '/' + db_ref(name).first
+    end
+
+    def database_by_name
+      Delphix.get(Delphix.database_url).body.result.map { |db| db.name }
     end
 
     # List database objects on the system.
@@ -59,7 +66,7 @@ module Delphix
     # @return [Array]
     #
     def databases
-      cache.fetch(:db) { Delphix.get(Delphix.database_url).body.result }
+      Delphix.get(Delphix.database_url).body.result
     end
 
     # Retrieve the reference to the specified database object.
@@ -78,7 +85,7 @@ module Delphix
     # @return [Array]
     #
     def db_groups
-      cache.fetch(:group) { Delphix.get(Delphix.group_url).body.result }
+      Delphix.get(Delphix.group_url).body.result
     end
 
     # Retrieve the reference to the specified group object.
@@ -97,7 +104,7 @@ module Delphix
     # @return [Array]
     #
     def environments
-      cache.fetch(:env) { Delphix.get(Delphix.environment_url).body.result }
+      Delphix.get(Delphix.environment_url).body.result
     end
 
     # Retrieve the reference to the specified environment object.
@@ -116,7 +123,7 @@ module Delphix
     # @return [Array]
     #
     def repositories
-      cache.fetch(:repo) { Delphix.get(Delphix.repository_url).body.result }
+      Delphix.get(Delphix.repository_url).body.result
     end
 
     # Retrieve the reference to the specified repositorie object.
@@ -136,7 +143,7 @@ module Delphix
     #
     def templates
       url = "http://#{Delphix.server}/resources/json/delphix/database/template"
-      cache.fetch(:template) { Delphix.get(url).body.result }
+      Delphix.get(url).body.result
     end
 
     # Retrieve the reference to the specified template object.
@@ -156,7 +163,7 @@ module Delphix
     #
     def js_templates
       url = "http://#{Delphix.server}/resources/json/delphix/jetstream/template"
-      cache.fetch(:js_templates) { Delphix.get(url).body.result }
+      Delphix.get(url).body.result
     end
 
     # Retrieve the reference to the specified jetstream/container object.
@@ -175,7 +182,7 @@ module Delphix
     # @return [Array]
     #
     def user
-      cache.fetch(:user) { Delphix.get(Delphix.user_url).body.result }
+      Delphix.get(Delphix.user_url).body.result
     end
 
     # Retrieve the reference to the specified user object.
@@ -189,15 +196,14 @@ module Delphix
       reference_to name, :name, user
     end
 
-    # Retrieve the reference to the specified template object.
-    #
-    # @param [String] name
-    #   The name of the template to retrieve the reference from.
-    #
-    # @return [Array]
-    #
-    def vdb_ref(name)
-      reference_to name, :name, databases
+    def job_status(job_id)
+      url = "http://#{Delphix.server}/resources/json/delphix/job/#{job_id}"
+      Delphix.get(url).body.result
+    end
+
+    def job_completed?(job_id)
+      url = "http://#{Delphix.server}/resources/json/delphix/job/#{job_id}"
+      Delphix.get(url).body.result['jobState'] =~ /^COMPLETED$/i
     end
   end
 end

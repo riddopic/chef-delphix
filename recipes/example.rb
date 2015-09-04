@@ -7,8 +7,7 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#require "../libraries/vdb"
-
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -21,11 +20,11 @@
 include_recipe 'delphix::default'
 
 delphix_vdb 'your_vdb_name_here' do
-  src_db          'the_source_db'
-  template_env    'template_environment'
-  user            'mail@example.com'
-  target_group    'a_target_group'
-  target_env      'a_target_environment'
-  mount           '/path'
+  src_db 'the_source_db'
+  template_env 'template_environment'
+  user 'mail@example.com'
+  target_group 'a_target_group'
+  target_env 'a_target_environment'
+  mount '/path'
   config_template 'no-mem-template'
 end

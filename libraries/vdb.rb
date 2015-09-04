@@ -26,7 +26,7 @@ class Chef
     # @provides :delphix_vdb
     # @action :provision
     #
-    class DelphixVDB < Chef::Resource
+    class DelphixVdb < Chef::Resource
       include Garcon
 
       # Chef attributes
@@ -127,7 +127,7 @@ class Chef
   end
 
   class Provider
-    class DelphixVDB < Chef::Provider
+    class DelphixVdb < Chef::Provider
       include Delphix::Objects
       include Garcon
 
@@ -150,8 +150,8 @@ class Chef
         end
 
       rescue LoadError
-        Chef::Log.error "Missing gem 'delphix'. " \
-                        "Use the default recipe to install it first."
+        Chef::Log.error "Missing gem 'delphix'. Use the default recipe to " \
+                        "install it first."
       end
 
       # Boolean indicating if WhyRun is supported by this provider.
@@ -167,39 +167,57 @@ class Chef
       # @return [Chef::Resource]
       #
       def load_current_resource
-        @current_resource ||= Chef::Resource::DelphixVDB.new(r.vdb)
+        @current_resource ||= Chef::Resource::DelphixVdb.new(r.vdb)
         @current_resource.exists = exists?
       end
 
       def action_provision
         if @current_resource.exists?
-          Chef::Log.debug "#{r.vdb}' virtual database already configured"
+          converge_by "Retrive '#{r.vdb}' connection URL" do
+            Chef::Log.info connection_url
+          end
         else
           converge_by "Provision '#{r.vdb}' virtual database" do
-            # OracleProvisionParameters
-            provision(
-              r.vdb,
+            provision r.vdb,
               group_ref(r.target_group).first,
               r.mount,
               template_ref(r.config_template).first,
               repo_ref(env_ref(r.target_env).first).first,
               db_ref(r.src_db).first
-            )
+            job_id = Delphix.last_response[:body][:job]
+
+            if job_id.blank?
+              until databases.reject { |db| db.name != name } do
+                sleep 3
+              end
+            else
+              until job_completed?(job_id) do
+                sleep 3
+              end
+            end
 
             template_name  = "#{r.src_db}-#{r.template_env}-template"
             container_name = "#{r.vdb}-#{r.user}-Container"
-
-            # JSDataTemplateCreateParameters
             create_template(template_name, r.src_db, db_ref(r.src_db).first)
+            job_id = Delphix.last_response[:body][:job]
 
-            # JSDataContainerCreateParameters
-            create_jetstream(
-              r.vdb,
-              vdb_ref(r.vdb).first,
+            if job_id.blank?
+              while js_template_ref.reject { |t| t.name != name } do
+                sleep 3
+              end
+            else
+              until job_completed?(job_id) do
+                sleep 3
+              end
+            end
+
+            create_jetstream r.vdb,
+              db_ref(r.vdb).first,
               user_ref(r.user).first,
               container_name,
               js_template_ref(template_name)
-            )
+            # Return the connection URL.
+            connection_url
           end
           r.updated_by_last_action(true)
         end
@@ -213,6 +231,18 @@ class Chef
       #
       def exists?
         !db_ref(r.vdb).blank?
+      end
+
+      # Return the connection string for the VDB.
+      #
+      # @return [String]
+      #
+      def connection_url
+        vdb = db_ref(r.vdb)[0]
+        url = "http://#{Delphix.server}/resources/json/delphix/database/#{vdb}/connectionInfo"
+        node.set[:delphix][r.vdb] = Delphix.get(url).body.result.jdbcStrings
+        node.save
+        node[:delphix][r.vdb]
       end
 
       # The parameters to use as input to provision an Oracle databases.
@@ -236,7 +266,7 @@ class Chef
       #   Reference to the container.
       #
       def provision(vdb, group, mount, template, repository, database)
-        Delphix.post Delphix.database_url,
+        Delphix.post Delphix.database_url + '/provision',
           container: {
             group: group,
             name: vdb,
@@ -267,10 +297,9 @@ class Chef
       end
 
       def create_template(template_name, src_db, ref_src_db)
-        url = uri_join('http://', Delphix.server,
+        url = uri_join 'http://', Delphix.server,
           '/resources/json/delphix/jetstream/template'
-        )
-        Delphix.GET url,
+        Delphix.post url,
           type: 'JSDataTemplateCreateParameters',
           name: template_name,
           dataSources: [
@@ -283,12 +312,12 @@ class Chef
               container: ref_src_db
             }
           ]
+      rescue
       end
 
       def create_jetstream(vdb, src_db, user, container, template)
-        url = uri_join('http://', Delphix.server,
+        url = uri_join 'http://', Delphix.server,
           '/resources/json/delphix/jetstream/container'
-        )
         Delphix.post url,
           type: 'JSDataContainerCreateParameters',
           dataSources: [

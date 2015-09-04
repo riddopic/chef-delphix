@@ -17,12 +17,9 @@
 # limitations under the License.
 #
 
-source 'https://supermarket.getchef.com'
+source 'https://supermarket.chef.io'
 
 metadata
-
-group :integration do
-end
 
 cookbook 'garcon', github: 'riddopic/garcon', branch: 'develop'
 cookbook 'baseos', github: 'riddopic/baseos', branch: 'master'
