@@ -20,16 +20,15 @@
 include_recipe 'apt::default' if platform_family? 'debian'
 node.default['build-essential']['compile_time'] = true
 include_recipe 'build-essential::default'
-gem_version = node[:delphix][:gem][:version]
 
 if Chef::Resource::ChefGem.instance_methods(false).include?(:compile_time)
   chef_gem 'delphix' do
-    version gem_version
+    version node[:delphix][:gem][:version]
     compile_time true
   end
 else
   chef_gem 'delphix' do
-    version gem_version
+    version node[:delphix][:gem][:version]
     action :nothing
   end.run_action(:install)
 end
