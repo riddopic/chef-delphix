@@ -18,6 +18,7 @@
 #
 
 require_relative 'objects'
+require 'poise'
 
 class Chef
   class Resource
@@ -27,7 +28,7 @@ class Chef
     # @action :provision
     #
     class DelphixVdb < Chef::Resource
-      include Garcon
+      include Poise
 
       # Chef attributes
       identity_attr :vdb
@@ -129,7 +130,7 @@ class Chef
   class Provider
     class DelphixVdb < Chef::Provider
       include Delphix::Objects
-      include Garcon
+      include Poise
 
       # Shortcut to new_resource.
       alias_method :r, :new_resource
@@ -140,9 +141,9 @@ class Chef
         super
         require 'delphix'
         Delphix.api_version = node[:delphix][:api_version]
-        Delphix.server      = node[:delphix][:server]
-        Delphix.api_user    = node[:delphix][:username]
-        Delphix.api_passwd  = node[:delphix][:password]
+        Delphix.server = node[:delphix][:server]
+        Delphix.api_user = node[:delphix][:username]
+        Delphix.api_passwd = node[:delphix][:password]
 
         begin
           Delphix.session
@@ -201,7 +202,7 @@ class Chef
             create_template(template_name, r.src_db, db_ref(r.src_db).first)
             job_id = Delphix.last_response[:body][:job]
 
-            if job_id.blank?
+            if job_id.nil? || job_id.empty?
               while js_template_ref.reject { |t| t.name != name } do
                 sleep 3
               end
@@ -216,7 +217,6 @@ class Chef
               user_ref(r.user).first,
               container_name,
               js_template_ref(template_name)
-            # Return the connection URL.
             connection_url
           end
           r.updated_by_last_action(true)
@@ -230,7 +230,7 @@ class Chef
       # @return [Boolean]
       #
       def exists?
-        !db_ref(r.vdb).blank?
+        !db_ref(r.vdb).nil? || !db_ref(r.vdb).empty?
       end
 
       # Return the connection string for the VDB.

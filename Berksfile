@@ -20,6 +20,3 @@
 source 'https://supermarket.chef.io'
 
 metadata
-
-cookbook 'garcon', github: 'riddopic/garcon', branch: 'develop'
-cookbook 'baseos', github: 'riddopic/baseos', branch: 'master'

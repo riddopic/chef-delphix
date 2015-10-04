@@ -23,10 +23,11 @@ maintainer_email 'sharding@trace3.com'
 license 'Apache 2.0'
 description 'Basic Delphix API Provider'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version '0.2.5'
+version '0.3.0'
 
 %w[amazon centos debian fedora oracle redhat ubuntu].each { |os| supports os }
 
 depends 'build-essential'
 depends 'apt'
 depends 'yum'
+
