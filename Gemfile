@@ -22,13 +22,13 @@ source 'https://rubygems.org'
 gem 'rest-client'
 
 group :lint do
-  gem 'foodcritic', '~> 4.0'
-  gem 'rubocop',    '~> 0.31'
+  gem 'foodcritic', '~> 4.0', '>= 4.0.0'
+  gem 'rubocop', '~> 0.49', '>= 0.49.0'
 end
 
 group :unit do
-  gem 'berkshelf', '~> 3'
-  gem 'chefspec',  '~> 4.2'
+  gem 'berkshelf', '~> 4', '>= 4.2.3'
+  gem 'chefspec', '~> 4.4', '>= 4.4.0'
 end
 
 group :kitchen_common do
@@ -42,7 +42,7 @@ end
 
 group :development do
   gem 'chef-zero'
-  gem 'yard'
+  gem 'yard', '>= 0.9.20'
   gem 'yard-classmethods'
   gem 'guard'
   gem 'guard-kitchen'
