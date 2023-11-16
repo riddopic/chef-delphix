@@ -22,7 +22,7 @@ source 'https://rubygems.org'
 gem 'rest-client'
 
 group :lint do
-  gem 'foodcritic', '~> 4.0'
+  gem 'foodcritic', '~> 5.0', '>= 5.0.0'
   gem 'rubocop',    '~> 0.31'
 end
 
@@ -46,7 +46,7 @@ group :development do
   gem 'yard-classmethods'
   gem 'guard'
   gem 'guard-kitchen'
-  gem 'guard-foodcritic'
+  gem 'guard-foodcritic', '>= 2.0.0'
   gem 'guard-rubocop'
   gem 'pry-nav'
 end
