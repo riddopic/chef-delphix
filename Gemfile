@@ -41,7 +41,7 @@ group :kitchen_docker do
 end
 
 group :development do
-  gem 'chef-zero'
+  gem 'chef-zero', '>= 15.0.17'
   gem 'yard'
   gem 'yard-classmethods'
   gem 'guard'
